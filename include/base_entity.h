@@ -32,8 +32,6 @@ public:
 		return m_shouldBeDestroyed;
 	}
 
-protected:
-	virtual void RequestRemovalFromHolder() noexcept;
 private:
 	bool m_shouldBeDestroyed{false};
 };

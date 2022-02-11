@@ -25,7 +25,7 @@ public:
 	Extension(ExtensionHolder &owner) : m_owner{owner} {
 
 	}
-	virtual ~Extension() = 0;
+	virtual ~Extension() {}
 	virtual ExtensionAbility GetName() const noexcept = 0;
 
 	inline const ExtensionHolder &Owner() const
@@ -47,7 +47,7 @@ using PExtension = std::unique_ptr<Extension>;
 class ExtensionHolder : virtual public Entities::BaseEntity {
 public:
 	ExtensionHolder() = default;
-	virtual ~ExtensionHolder() = 0;
+	virtual ~ExtensionHolder() {}
 
 	/// Adds extension to holder if holder doesn't have the same extension already
 	void AddExtension(PExtension &&extensionToAdd) noexcept;
