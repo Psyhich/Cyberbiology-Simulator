@@ -4,13 +4,17 @@
 
 using namespace Extensions;
 
-EnergyAcceptor::EnergyAcceptor(ExtensionHolder &owner, TileGetter getter) : 
+EnergyAcceptor::EnergyAcceptor(ExtensionHolder &owner, const BaseParams &params, TileGetter getter, ConsumptionCalculator calc) :
 	Extension(owner),
-	m_GetTile{getter}
+	m_GetTile{getter},
+	m_CalculateConsumption{calc},
+	m_sunTreshold{params.sunTreshold},
+	m_soilTreshold{params.soilTreshold},
+	m_storedEnergy{params.startingEnergy}
 	{
 	Owner().AddEvent(Entities::PossibleEntityEvent::ActEvent,
 		[&] () {
-			m_storedEnergy -= CalculateConsumption();
+			m_storedEnergy -= m_CalculateConsumption();
 			if(m_storedEnergy <= 0) {
 				Owner().Destroy();
 				return;
@@ -30,14 +34,14 @@ EnergyAcceptor::EnergyAcceptor(ExtensionHolder &owner, TileGetter getter) :
 }
 
 void EnergyAcceptor::AcceptSun(double amount) noexcept {
-	if(amount > m_sunTreshold) {
+	if(m_sunTreshold <= 100 && amount > m_sunTreshold) {
 		Owner().Destroy();
 		return;
 	}
 }
 
 void EnergyAcceptor::AcceptSoil(double amount) noexcept {
-	if(amount > m_soilTreshold) {
+	if(m_soilTreshold <= 100 && amount > m_soilTreshold) {
 		Owner().Destroy();
 		return;
 	}

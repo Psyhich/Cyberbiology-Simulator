@@ -6,35 +6,48 @@
 
 namespace Extensions {
 
-class EnergyAcceptor : public Extension {
-public:
-	using TileGetter = std::function<Maps::TileParams&()>;
+	class EnergyAcceptor : public Extension {
+	public:
+		struct BaseParams
+		{
+			double sunTreshold{0};
+			double soilTreshold{0};
+			double startingEnergy{0};
+		};
 
-	EnergyAcceptor(ExtensionHolder &owner, TileGetter getter);
-	~EnergyAcceptor() override {}
+		using TileGetter = std::function<Maps::TileParams&()>;
+		using ConsumptionCalculator = std::function<double()>;
 
-	virtual double CalculateConsumption() noexcept = 0;
-	static constexpr const ExtensionAbility NAME{AcceptEnergy};
+		EnergyAcceptor(ExtensionHolder &owner, const BaseParams &params, TileGetter getter, ConsumptionCalculator calc);
+		~EnergyAcceptor() override {}
 
-protected:
-	inline double GetEnergyStored() const noexcept {
-		return m_storedEnergy;
-	}
-private:
-	TileGetter m_GetTile;
+		inline ExtensionAbility GetName() const noexcept override
+		{
+			return AcceptEnergy;
+		}
 
-	void AcceptSun(double amount) noexcept;
-	void AcceptSoil(double amount) noexcept;
-	
-	// Max amount the creature can recieve(but not hold) before dying
-	double m_sunTreshold; 
-	double m_soilTreshold; 
+	protected:
+		inline double GetEnergyStored() const noexcept {
+			return m_storedEnergy;
+		}
+	private:
+		void AcceptSun(double amount) noexcept;
+		void AcceptSoil(double amount) noexcept;
 
-	double m_storedEnergy;
+	private:
+		TileGetter m_GetTile;
+		ConsumptionCalculator m_CalculateConsumption;
+		
+		// Max amount the creature can recieve(but not hold) before dying
+		// Treshold value varies in range [0;100], where values bigger than 100 means full immunity
+		double m_sunTreshold; 
+		double m_soilTreshold; 
 
-	// Amount of energy would be removed at each turn
-	double m_energyConsumption;
-};
+		double m_storedEnergy;
+
+		// Amount of energy would be removed at each turn
+		double m_energyConsumption;
+	};
 
 } // Extension
 

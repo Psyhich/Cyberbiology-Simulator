@@ -22,7 +22,7 @@ struct TileParams {
 		return gotEnergy;
 	}
 	inline void AddSoilEnergy(double energyToAdd) noexcept {
-		soilCount += energyToAdd / 2;
+		soilCount += energyToAdd;
 	}
 private:
 	// Sun energy is not remove from tile
